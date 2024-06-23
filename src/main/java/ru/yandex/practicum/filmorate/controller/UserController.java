@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         log.info("Обращение к endpoint PUT /user");
         if (!users.containsKey(user.getId()) || user.getId() == 0) {
             throw new ValidationException("Такого пользователя нет");

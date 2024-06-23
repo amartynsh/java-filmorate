@@ -19,7 +19,7 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         log.info("Обращение на endpoint GET /films");
         log.info("Фильм в запросе: {}", film);
         log.info("Текущий список фильмов: {}", films);
