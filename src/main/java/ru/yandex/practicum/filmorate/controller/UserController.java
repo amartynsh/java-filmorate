@@ -19,7 +19,6 @@ public class UserController {
 
     private final Map<Integer, User> users = new HashMap<>();
 
-
     @PostMapping
     public User addUser(@RequestBody User user) {
         log.trace("Обращение к endpoint POST //user");

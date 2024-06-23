@@ -62,20 +62,20 @@ public class FilmController {
     }
 
     private void validateFilm(Film film) {
-        LocalDate FIRST_FILM_RELEASE_DATE = LocalDate.of(1895, 12, 28);
-        int DESCRIPTION_SIZE = 200;
+        LocalDate firstFilmReleaseDate = LocalDate.of(1895, 12, 28);
+        int descriptionSize = 200;
         log.trace("Начало процесса валидации фильма");
         if (film.getName() == null || film.getName().isEmpty()) {
             log.trace("Валидация названия не пройдена, название пусто name={}", film.getName());
             throw new ValidationException("Название не может быть пустым");
         }
 
-        if (film.getDescription().length() > DESCRIPTION_SIZE) {
+        if (film.getDescription().length() > descriptionSize) {
             log.trace("Валидация описания не пройдена, слишком длинное описание, длина {}, description={}",
                     film.getDescription().length(), film.getDescription());
             throw new ValidationException("Описание больше 200 символов");
         }
-        if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(firstFilmReleaseDate)) {
             log.trace("Валидация даты не пройдена, значение releaseDate={}", film.getReleaseDate());
             throw new ValidationException("Дата релиза не может быть раньше 1895.12.28");
         }
