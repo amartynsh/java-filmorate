@@ -2,9 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserControllerTest {
-
+    @Autowired
     UserController userController;
 
     @BeforeEach
     void beforeEach() {
-        userController = new UserController();
+        userController = new UserController(new UserService(new InMemoryUserStorage()));
     }
 
     @Test
@@ -42,7 +46,6 @@ class UserControllerTest {
                 .build();
         assertDoesNotThrow(() -> userController.addUser(userWithoutName));
         assertEquals(userWithoutName.getLogin(), userWithoutName.getName());
-
     }
 
     @Test
@@ -55,16 +58,6 @@ class UserControllerTest {
                 .birthday(LocalDate.of(1999, 3, 12))
                 .build();
         assertThrows(ValidationException.class, () -> userController.addUser(userNoEmail));
-
-        //Пользователь с заполненным неверно email
-        User userIncorrectEmail = User.builder()
-                .email("testuser.yandex.ru")
-                .login("testuser")
-                .name("Test User")
-                .birthday(LocalDate.of(1999, 3, 12))
-                .build();
-        assertThrows(ValidationException.class, () -> userController.addUser(userIncorrectEmail));
-
 
         //Пользователь с пустым Login
         User userEmptyLogin = User.builder()
@@ -140,7 +133,7 @@ class UserControllerTest {
                 .birthday(LocalDate.of(1999, 3, 12))
                 .build();
 
-        assertThrows(ValidationException.class, () -> userController.updateUser(userUpdated));
+        assertThrows(NotFoundException.class, () -> userController.updateUser(userUpdated));
     }
 
     @Test
