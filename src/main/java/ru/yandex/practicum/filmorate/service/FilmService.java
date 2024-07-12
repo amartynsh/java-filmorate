@@ -77,5 +77,4 @@ public class FilmService {
         film.getLikes().remove(userId);
         log.info("Новый список лайков {} ", film.getLikes());
     }
-
 }

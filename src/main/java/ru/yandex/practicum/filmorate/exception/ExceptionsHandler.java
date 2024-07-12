@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.exception;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +30,7 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerAnnootation(MethodArgumentNotValidException  e) {
+    public ErrorResponse handlerAnnootation(MethodArgumentNotValidException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
