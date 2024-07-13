@@ -54,7 +54,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(long id) {
-        return Optional.of(users.get(id)).orElseThrow(() -> new NotFoundException("Такого пользователя нет"));
+        log.info("Начали искать пользователя {}", id);
+        return Optional.ofNullable(users.get(id)).orElseThrow(() ->
+                new NotFoundException("Такого пользователя нет"));
     }
 
     public void deleteUserById(long id) {
