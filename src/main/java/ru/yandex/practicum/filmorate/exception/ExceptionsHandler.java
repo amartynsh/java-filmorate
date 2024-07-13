@@ -42,7 +42,7 @@ public class ExceptionsHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handlerValidAnnotation(ConstraintViolationException e){
+    public ResponseEntity<String> handlerValidAnnotation(ConstraintViolationException e) {
         log.debug("Произошла ошибка валидации ConstraintViolationException. message: {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
