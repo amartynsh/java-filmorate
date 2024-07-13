@@ -1,32 +1,23 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-
-import java.util.ArrayList;
-
 import java.util.List;
 
-
-@Component
+@Validated
+@RequiredArgsConstructor
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
@@ -41,7 +32,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
-        return new ArrayList<>(userService.getAllUsers());
+        return userService.getAllUsers();
     }
 
     @PutMapping("/{id}/friends/{friendId}")

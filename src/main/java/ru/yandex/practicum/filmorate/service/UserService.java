@@ -1,38 +1,37 @@
 package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    protected final UserStorage userStorage;
+    private final UserStorage userStorage;
 
-    @Autowired
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
-
-    public User createUser(@NotNull User user) {
+    public User createUser(User user) {
+        validateUser(user);
         return userStorage.addUser(user);
     }
 
-    public User updateUser(@NotNull User user) {
+    public User updateUser(User user) {
+        validateUser(user);
         return userStorage.updateUser(user);
     }
 
-    public User getUserById(@NotNull Long id) {
+    public User getUserById(Long id) {
         return userStorage.getUserById(id);
     }
 
@@ -40,7 +39,7 @@ public class UserService {
         return userStorage.getAllUsers();
     }
 
-    public void deleteUserById(@NotNull Long id) {
+    public void deleteUserById(Long id) {
         userStorage.deleteUserById(id);
     }
 
@@ -85,5 +84,15 @@ public class UserService {
         return result.stream()
                 .map(friendId -> userStorage.getUserById(friendId))
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private void validateUser(User user) {
+
+        log.trace("Начало процесса валидации пользователя");
+
+        if (user.getLogin().contains(" ")) {
+            log.info("Валидация login не пройдена, есть пробелы в  Login = {} ", user.getLogin());
+            throw new ValidationException("Логин не должен содержать пробел");
+        }
     }
 }
