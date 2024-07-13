@@ -20,12 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmControllerTest {
 
     FilmController filmController;
- UserService userService;
+    UserService userService;
 
     @BeforeEach
     void beforeEach() {
-        filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
-        userService = new UserService(new InMemoryUserStorage());
+        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(),
+                userService = new UserService(new InMemoryUserStorage())));
+
     }
 
     @Test
