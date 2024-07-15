@@ -17,6 +17,7 @@ import java.util.*;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    LocalDate firstFilmReleaseDate = LocalDate.of(1895, 12, 28);
 
     public void addFilm(Film film) {
         validateFilm(film);
@@ -41,42 +42,34 @@ public class FilmService {
     }
 
     public void addLikeToFilm(long filmId, long userId) {
-        log.info("Проверяем есть ли сервисы ? {} {}", filmStorage, userService);
+        log.trace("Проверяем есть ли сервисы ? {} {}", filmStorage, userService);
         log.info("Для фильма {} добавляем лайк от пользователя {}", filmId, userId);
-        if (filmStorage.getFilmById(filmId) == null) {
-            throw new NotFoundException("При добавлении лайка фильм не найден");
-        }
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("При добавлении лайка пользователь не найден");
-        }
 
-        Film film = filmStorage.getFilmById(filmId);
-        film.getLikes().add(userId);
-
-        log.info("Всего лайков у фильма{} ", film.getLikes().size());
-        log.info("Обновленный список лайков {} ", film.getLikes());
+        //Проверяем наличие пользователя
+        userService.getUserById(userId);
+        getFilmById(filmId).getLikes().add(userId);
     }
 
     public void deleteLikeFromFilm(long filmId, long userId) {
-        if (filmStorage.getFilmById(filmId) == null) {
-            throw new NotFoundException("При добавлении лайка фильм не найден");
 
-        }
-        if (userService.getUserById(userId) == null) {
-            throw new NotFoundException("При добавлении лайка пользователь не найден");
-        }
-        Film film = filmStorage.getFilmById(filmId);
-        log.info("Для фильма {} удалям лайк от пользователя {}", film.getId(), userId);
-        film.getLikes().remove(userId);
-        log.info("Новый список лайков {} ", film.getLikes());
+        //Проверяем наличие пользователя, чей лайк удаляем
+        userService.getUserById(userId);
+        getFilmById(filmId).getLikes().remove(userId);
+
     }
 
     private void validateFilm(Film film) {
-        LocalDate firstFilmReleaseDate = LocalDate.of(1895, 12, 28);
         log.info("Начало процесса валидации фильма");
         if (film.getReleaseDate().isBefore(firstFilmReleaseDate)) {
             log.info("Валидация даты не пройдена, значение releaseDate={}", film.getReleaseDate());
             throw new ValidationException("Дата релиза не может быть раньше 1895.12.28");
         }
+    }
+
+    public Film getFilmById(long filmId) {
+        if (filmStorage.getFilmById(filmId).isEmpty()) {
+            throw new NotFoundException("Фильм не найден");
+        }
+        return filmStorage.getFilmById(filmId).get();
     }
 }

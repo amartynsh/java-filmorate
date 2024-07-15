@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
@@ -18,7 +17,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        log.info("Текущий список фильмов: {}", films);
+        log.trace("Текущий список фильмов: {}", films);
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Фильм {} записан", film.getId());
@@ -26,16 +25,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(@Valid Film film) {
+    public Film updateFilm(Film film) {
 
         if (!films.containsKey(film.getId())) {
             throw new NotFoundException("Обновляемый фильм не найден");
         }
-        log.info("Валидация PUT /films прошла");
-        log.info("Cписок фильмов до обновления фильма : {}", films);
+        log.trace("Cписок фильмов до обновления фильма : {}", films);
         films.put(film.getId(), film);
-        log.info("Фильм {} обновлён", film);
-        log.info("Cписок фильмов после обновления фильма : {}", films);
+        log.trace("Cписок фильмов после обновления фильма : {}", films);
         log.info("Фильм {} обновлён", film.getId());
         return film;
     }
@@ -50,7 +47,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(long id) {
-        return Optional.ofNullable(films.get(id)).orElseThrow(() -> new NotFoundException("Фильм не найден"));
+    public Optional<Film> getFilmById(long id) {
+        return films.values().stream().filter(f -> f.getId() == id).findFirst();
     }
 }

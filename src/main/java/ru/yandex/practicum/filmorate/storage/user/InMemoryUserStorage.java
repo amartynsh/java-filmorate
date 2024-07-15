@@ -16,35 +16,26 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User addUser(User user) {
         log.info("Начали сохранять пользователя {}", user);
-        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
+        validateName(user);
         user.setId(getNextId());
-        log.info("Установлен ID пользователя {}", user.getId());
+        log.trace("Установлен ID пользователя {}", user.getId());
         users.put(user.getId(), user);
-        log.info("Пользователь сохранен {}", user);
+        log.trace("Пользователь сохранен {}", user);
         return users.get(user.getId());
     }
 
     @Override
     public User updateUser(User user) {
         log.info("Начали обновлять пользователя {}", user.getId());
-        if (!users.containsKey(user.getId()) || user.getId() == 0) {
-            throw new NotFoundException("Такого пользователя нет");
-        }
-
-        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-            log.trace("Заменили имя пользователя {} на логин {}", user.getName(), user.getLogin());
-        }
-
+        validateName(user);
         users.put(user.getId(), user);
-        log.info("Записали пользователя {}", users.get(user.getId()));
+        log.trace("Записали пользователя {}", users.get(user.getId()));
         return user;
     }
 
     @Override
     public List<User> getAllUsers() {
+        log.info("Получаем список пользователей");
         return new ArrayList<>(users.values());
     }
 
@@ -53,16 +44,21 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(long id) {
+    public Optional<User> getUserById(long id) {
         log.info("Начали искать пользователя {}", id);
-        return Optional.ofNullable(users.get(id)).orElseThrow(() ->
-                new NotFoundException("Такого пользователя нет"));
+        return Optional.ofNullable(users.get(id));
     }
 
     public void deleteUserById(long id) {
-        if (users.get(id) == null) {
+        log.info("Начали удалять пользователя {}", id);
+        if (users.remove(id) == null) {
             throw new NotFoundException("Такого пользователя нет");
         }
-        users.remove(id);
+    }
+
+    private void validateName(User user) {
+        if (user.getName().isBlank() || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }

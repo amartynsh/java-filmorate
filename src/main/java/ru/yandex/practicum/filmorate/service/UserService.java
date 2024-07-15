@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,18 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (userStorage.getUserById(user.getId()).isEmpty()) {
+            throw new NotFoundException("Обновляемого пользователя несуществует");
+        }
         validateUser(user);
         return userStorage.updateUser(user);
     }
 
     public User getUserById(Long id) {
-        return userStorage.getUserById(id);
+        if (userStorage.getUserById(id).isEmpty()) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        return userStorage.getUserById(id).get();
     }
 
     public List<User> getAllUsers() {
@@ -44,15 +49,17 @@ public class UserService {
 
     public void addFriend(long userId, Long newFriendToAddId) {
         log.info("Пользователь {} добавляет друга {}", userId, newFriendToAddId);
-        User user = userStorage.getUserById(userId);
-        User newFriendToAdd = userStorage.getUserById(newFriendToAddId);
 
-        if (newFriendToAdd == null) {
-            throw new NotFoundException("Добавляемого друга не существует");
+        if (userStorage.getUserById(userId).isEmpty()) {
+            throw new NotFoundException("Пользователя с ID: " + userId + " нет");
         }
-        if (user == null) {
-            throw new NotFoundException("Пользователя не существует");
+        if (userStorage.getUserById(newFriendToAddId).isEmpty()) {
+            throw new NotFoundException("Добавляемого друга с ID: " + newFriendToAddId + " нет");
         }
+
+        User user = userStorage.getUserById(userId).get();
+        User newFriendToAdd = userStorage.getUserById(newFriendToAddId).get();
+
         user.getFriends().add(newFriendToAddId);
         log.info("Пользователь {} добавил друга {}, теперь список друзей {}", userId, newFriendToAdd,
                 user.getFriends());
@@ -62,27 +69,34 @@ public class UserService {
     }
 
     public void removeFriend(long userId, long friendToRemoveId) {
-        userStorage.getUserById(userId).getFriends().remove(friendToRemoveId);
-        userStorage.getUserById(friendToRemoveId).getFriends().remove(userId);
+        if (userStorage.getUserById(userId).isEmpty()) {
+            throw new NotFoundException("Удаляемый пользователь не найден");
+        }
+        if (userStorage.getUserById(friendToRemoveId).isEmpty()) {
+            throw new NotFoundException("Удаляемый друг не найден");
+        }
+        userStorage.getUserById(userId).get().getFriends().remove(friendToRemoveId);
+        userStorage.getUserById(friendToRemoveId).get().getFriends().remove(userId);
     }
 
     public List<User> getFriends(long userId) {
-        return userStorage.getUserById(userId).getFriends().stream()
-                .map(friendId -> userStorage.getUserById(friendId))
-                .collect(Collectors.toCollection(ArrayList::new));
+
+        return getUserById(userId).getFriends().stream()
+                .map(this::getUserById)
+                .collect(Collectors.toList());
     }
 
-    public List<User> compareFriendLists(@NotNull long userId, @NotNull long friendToCompareId) {
+    public List<User> compareFriendLists(long userId, long friendToCompareId) {
+        User user = getUserById(userId);
+        User userToCompare = getUserById(friendToCompareId);
 
-        User user = userStorage.getUserById(userId);
-        User userToCompare = userStorage.getUserById(friendToCompareId);
         List<Long> listOfFriends = new ArrayList<>(user.getFriends());
         List<Long> result = new ArrayList<>(userToCompare.getFriends());
         result.retainAll(listOfFriends);
 
         return result.stream()
-                .map(friendId -> userStorage.getUserById(friendId))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .map(this::getUserById)
+                .toList();
     }
 
     private void validateUser(User user) {
@@ -92,6 +106,10 @@ public class UserService {
         if (user.getLogin().contains(" ")) {
             log.info("Валидация login не пройдена, есть пробелы в  Login = {} ", user.getLogin());
             throw new ValidationException("Логин не должен содержать пробел");
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.trace("Заменили имя пользователя {} на логин {}", user.getName(), user.getLogin());
         }
     }
 }
