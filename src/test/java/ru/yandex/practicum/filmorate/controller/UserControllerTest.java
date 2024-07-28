@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FriendService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +24,9 @@ class UserControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
+        UserStorage storage = new InMemoryUserStorage();
+        UserService userService = new UserService(storage);
+        userController = new UserController(new UserService(storage), new FriendService(userService, storage));
     }
 
     @Test

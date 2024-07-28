@@ -31,18 +31,13 @@ public class FilmController {
         log.info("Обращение на endpoint POST /films");
         log.info("Фильм в запросе: {}", film);
 
-        filmService.addFilm(film);
-        return film;
+        return filmService.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Обращение на endpoint PUT /films");
-
-        filmService.updateFilm(film);
-
-        log.info("Валидация PUT /films прошла");
-        return film;
+        return filmService.updateFilm(film);
     }
 
     @GetMapping
@@ -57,11 +52,18 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("добавление лайка через PUT /{}/like/{}", id, userId);
         filmService.addLikeToFilm(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("удаление лайка через DELETE /{id}/like/{userId}");
         filmService.deleteLikeFromFilm(id, userId);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable long id) {
+        return filmService.getFilmById(id);
     }
 }

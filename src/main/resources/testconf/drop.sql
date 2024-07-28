@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS film_to_genre_mapping, genres, likes, films, mpa, friends, users  CASCADE;
