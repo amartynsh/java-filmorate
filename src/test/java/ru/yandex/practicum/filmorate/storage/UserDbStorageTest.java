@@ -17,7 +17,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @AutoConfigureTestDatabase
 @JdbcTest
 @ComponentScan("ru.yandex.practicum.filmorate")
@@ -38,7 +37,6 @@ public class UserDbStorageTest {
         User user = new User(1L, "test@test.ru", "test", "test", LocalDate.now());
         userDbStorage.addUser(user);
         assertThat(userDbStorage.getAllUsers().size()).isEqualTo(6);
-
     }
 
     @Test
@@ -49,10 +47,13 @@ public class UserDbStorageTest {
     @Test
     public void updateUserTest() {
         assertThat(userDbStorage.getUserById(1L)).get().hasFieldOrPropertyWithValue("name", "user1");
-        User user = userDbStorage.getUserById(1L).get();
-        user.setName("userXXX");
-        userDbStorage.updateUser(user);
-        assertThat(userDbStorage.getUserById(1L)).get().hasFieldOrPropertyWithValue("name", "userXXX");
+        if (userDbStorage.getUserById(1L).isPresent()) {
+            User user;
+            user = userDbStorage.getUserById(1L).get();
+            user.setName("userXXX");
+            userDbStorage.updateUser(user);
+            assertThat(userDbStorage.getUserById(1L)).get().hasFieldOrPropertyWithValue("name", "userXXX");
+        }
     }
 
     @Test
@@ -82,6 +83,6 @@ public class UserDbStorageTest {
 
     @Test
     public void getFriends() {
-    assertThat(friendService.getFriends(1).size()).isEqualTo(1);
+        assertThat(friendService.getFriends(1).size()).isEqualTo(1);
     }
 }

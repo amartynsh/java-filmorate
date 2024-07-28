@@ -62,13 +62,9 @@ public class FilmDbStorageTest {
 
     @Test
     public void addFilmTest() {
-        Film film = new Film(0, "test", "test", LocalDate.now()
-                , 60, new Mpa(5, "1"));
+        Film film = new Film(0, "test", "test", LocalDate.now(),
+                60, new Mpa(5, "1"));
         filmDbStorage.addFilm(film);
         assertThat(filmDbStorage.getFilmById(4).get()).hasFieldOrPropertyWithValue("name", "test");
     }
 }
-
-
-
-
