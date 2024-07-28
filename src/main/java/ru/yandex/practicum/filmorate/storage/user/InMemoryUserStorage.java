@@ -56,6 +56,21 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
+    public void addFriend(long userId, long friendId) {
+
+    }
+
+    @Override
+    public void deleteFriend(long userId, long friendId) {
+
+    }
+
+    @Override
+    public List<User> getFriends(long userId) {
+        return List.of();
+    }
+
     private void validateName(User user) {
         if (user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
