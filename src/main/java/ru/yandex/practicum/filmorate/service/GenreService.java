@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class GenreService {
-    GenreStorage genreStorage;
+    private final GenreStorage genreStorage;
 
     public Genre getGenreById(int id) {
         if (genreStorage.getGenreById(id).isEmpty()) {
@@ -26,5 +26,4 @@ public class GenreService {
         log.info("Getting all genres");
         return genreStorage.getAllGenresNames();
     }
-
 }

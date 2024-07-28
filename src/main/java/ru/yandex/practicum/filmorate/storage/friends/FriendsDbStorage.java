@@ -15,6 +15,4 @@ public class FriendsDbStorage {
     public void addFriend(int userId, int friendId) {
         jdbcTemplate.update(ADD_FRIEND, userId, friendId);
     }
-
-
 }

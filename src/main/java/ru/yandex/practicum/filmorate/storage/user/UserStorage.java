@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserStorage {
-    User addUser(User user);
+    Optional<User> addUser(User user);
 
-    User updateUser(User user);
+    void updateUser(User user);
 
     List<User> getAllUsers();
 
@@ -21,4 +21,5 @@ public interface UserStorage {
     void deleteFriend(long userId, long friendId);
 
     List<User> getFriends(long userId);
+
 }

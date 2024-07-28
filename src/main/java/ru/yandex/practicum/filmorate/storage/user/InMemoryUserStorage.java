@@ -14,23 +14,22 @@ public class InMemoryUserStorage implements UserStorage {
     private long filmId = 1;
 
     @Override
-    public User addUser(User user) {
+    public Optional<User> addUser(User user) {
         log.info("Начали сохранять пользователя {}", user);
         validateName(user);
         user.setId(getNextId());
         log.trace("Установлен ID пользователя {}", user.getId());
         users.put(user.getId(), user);
         log.trace("Пользователь сохранен {}", user);
-        return users.get(user.getId());
+        return getUserById(user.getId());
     }
 
     @Override
-    public User updateUser(User user) {
+    public void updateUser(User user) {
         log.info("Начали обновлять пользователя {}", user.getId());
         validateName(user);
         users.put(user.getId(), user);
         log.trace("Записали пользователя {}", users.get(user.getId()));
-        return user;
     }
 
     @Override

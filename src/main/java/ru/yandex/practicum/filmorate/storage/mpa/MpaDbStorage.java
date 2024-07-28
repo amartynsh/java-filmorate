@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @Component
 public class MpaDbStorage implements MpaStorage {
-    MpaRowMapper mpaRowMapper;
-    JdbcTemplate jdbcTemplate;
+    private final MpaRowMapper mpaRowMapper;
+    private final JdbcTemplate jdbcTemplate;
     private static final String GET_MPA_BY_ID = "SELECT * FROM mpa WHERE mpa_id =?";
     private static final String GET_ALL_MPA = "SELECT * FROM mpa ORDER BY mpa_id ASC";
 
@@ -38,6 +38,4 @@ public class MpaDbStorage implements MpaStorage {
     public List<Mpa> getAllMpaNames() {
         return jdbcTemplate.query(GET_ALL_MPA, mpaRowMapper);
     }
-
-
 }

@@ -14,8 +14,8 @@ import java.util.Optional;
 @Component
 public class GenreDbStorage implements GenreStorage {
 
-    GenreRowMapper genreRowMapper;
-    JdbcTemplate jdbcTemplate;
+    private final GenreRowMapper genreRowMapper;
+    private final JdbcTemplate jdbcTemplate;
     private static final String FIND_ALL_GENRES = "SELECT * FROM genre ORDER BY genre_id ASC";
     private static final String FIND_GENRE_BY_ID = "SELECT * FROM genre WHERE genre_id =?";
 

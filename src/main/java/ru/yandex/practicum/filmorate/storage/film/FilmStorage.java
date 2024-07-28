@@ -8,13 +8,11 @@ import java.util.Optional;
 public interface FilmStorage {
     Optional<Film> addFilm(Film film);
 
-    Optional<Film> updateFilm(Film film);
+    void updateFilm(Film film);
 
     List<Film> getAllFilms();
 
     Optional<Film> getFilmById(long id);
-
-    void validateFilmSql(Film film);
 
     void addLikeToFilm(long filmId, long userId);
 

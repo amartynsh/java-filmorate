@@ -26,9 +26,9 @@ public class FilmService {
 
     LocalDate firstFilmReleaseDate = LocalDate.of(1895, 12, 28);
 
-    public Optional<Film> addFilm(Film film) {
+    public Film addFilm(Film film) {
         validateFilm(film);
-        return filmStorage.addFilm(film);
+        return filmStorage.addFilm(film).get();
     }
 
     public Film updateFilm(Film film) {
@@ -43,27 +43,32 @@ public class FilmService {
     }
 
     public List<Film> getMostLikedFilms(int count) {
+        log.info("Вызвали метод подсчета популярных фильмов, надо отдать= {}", count);
         List<Film> sortedFilm = new ArrayList<>(filmStorage.getAllFilms());
-        return sortedFilm.stream()
+        sortedFilm = sortedFilm.stream()
                 .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
+
+        log.info("Получился список {}", sortedFilm);
+
+        return sortedFilm;
     }
 
     public void addLikeToFilm(long filmId, long userId) {
         log.info("Для фильма {} добавляем лайк от пользователя {}", filmId, userId);
-
         //Проверяем наличие пользователя
         userService.getUserById(userId);
+        log.info("Состояние пользователя: {}", userService.getUserById(userId));
+        log.info("Лайки фильма ДО обновления {}", filmStorage.getFilmById(filmId).get().getLikes());
         filmStorage.addLikeToFilm(filmId, userId);
+        log.info("Лайки фильма после обновления {}", filmStorage.getFilmById(filmId).get().getLikes());
     }
 
     public void deleteLikeFromFilm(long filmId, long userId) {
-
         //Проверяем наличие пользователя, чей лайк удаляем
         userService.getUserById(userId);
         filmStorage.deleteLikeFromFilm(filmId, userId);
-
     }
 
     private void validateFilm(Film film) {
@@ -72,7 +77,6 @@ public class FilmService {
             log.info("Валидация даты не пройдена, значение releaseDate={}", film.getReleaseDate());
             throw new ValidationException("Дата релиза не может быть раньше чем " + firstFilmReleaseDate);
         }
-        filmStorage.validateFilmSql(film);
     }
 
     public Film getFilmById(long filmId) {

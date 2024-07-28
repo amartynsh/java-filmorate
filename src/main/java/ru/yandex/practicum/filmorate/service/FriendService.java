@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 public class FriendService {
 
-    UserStorage userStorage;
-    UserService userService;
+    private final UserStorage userStorage;
+    private final UserService userService;
 
     public FriendService(UserService userService, @Qualifier("userDbStorage") UserStorage userStorage) {
 
@@ -60,7 +60,6 @@ public class FriendService {
         List<User> listOfFriends = new ArrayList<>(getFriends(userId));
         List<User> result = new ArrayList<>(getFriends(friendToCompareId));
         result.retainAll(listOfFriends);
-
         return result;
     }
 }

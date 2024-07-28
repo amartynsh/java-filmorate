@@ -21,12 +21,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(getNextId());
         films.put(film.getId(), film);
         log.info("Фильм {} записан", film.getId());
-        return Optional.of(film);
+        return getFilmById(film.getId());
     }
 
     @Override
-    public Optional<Film> updateFilm(Film film) {
-
+    public void updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
             throw new NotFoundException("Обновляемый фильм не найден");
         }
@@ -34,7 +33,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
         log.trace("Cписок фильмов после обновления фильма : {}", films);
         log.info("Фильм {} обновлён", film.getId());
-        return Optional.of(film);
     }
 
     @Override
@@ -49,11 +47,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Optional<Film> getFilmById(long id) {
         return films.values().stream().filter(f -> f.getId() == id).findFirst();
-    }
-
-    @Override
-    public void validateFilmSql(Film film) {
-
     }
 
     @Override

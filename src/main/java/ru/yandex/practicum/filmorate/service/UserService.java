@@ -22,7 +22,7 @@ public class UserService {
 
     public User createUser(User user) {
         validateUser(user);
-        return userStorage.addUser(user);
+        return userStorage.addUser(user).get();
     }
 
     public User updateUser(User user) {
@@ -30,7 +30,8 @@ public class UserService {
             throw new NotFoundException("Обновляемого пользователя несуществует");
         }
         validateUser(user);
-        return userStorage.updateUser(user);
+        userStorage.updateUser(user);
+        return userStorage.getUserById(user.getId()).get();
     }
 
     public User getUserById(Long id) {
